@@ -1,16 +1,40 @@
+import os
+import flask
+from replit import db, web
 import tweepy
 import os
+import schedule
+import time
+import requests, json
 
-ck = os.environ["ck"]
-cs = os.environ["cs"]
 
-# Authenticate to Twitter
-auth = tweepy.OAuthHandler(ck, cs)
+# -- Create & configure Flask application.
+app = flask.Flask(__name__)
+app.static_url_path = "/static"
 
-ats = os.environ["ats"]
-at = os.environ["at"]
+users = web.UserStore()
 
-auth.set_access_token(at, ats)
+@app.route("/")
+def index():
+  return '''<h1>It works</h1>'''
+
+web.run(app)
+
+db["ck"] = os.environ['ck']
+db["cs"] = os.environ['cs']
+db["ats"] = os.environ['ats']
+db["at"] = os.environ['at']
+db["api_key"] = os.environ['api_key']
+
+value1 = db["ck"] 
+value2 = db["cs"]
+
+auth = tweepy.OAuthHandler(value1, value2)
+
+value3 = db['ats']
+value4 = db['at']
+
+auth.set_access_token(value4, value3)
 
 api = tweepy.API(auth)
 
@@ -21,14 +45,11 @@ except:
     print("Error during authentication")
 
 
-# importing requests and json
-import requests, json
-# base URL
 BASE_URL = "https://api.openweathermap.org/data/2.5/weather?"
 CITY = "Ahmedabad"
-# API key API_KEY = "Your API Key"
+value5 = db['api_key']
 # upadting the URL
-URL = BASE_URL + "q=" + CITY + "&appid=" + "API KEY"
+URL = BASE_URL + "q=" + CITY + "&appid=" + value5
 # HTTP request
 response = requests.get(URL)
 # checking the status code of the request
@@ -60,10 +81,6 @@ else:
 
 
 
-
-import schedule
-import time
-  
 def func():
   api.update_status(
     (f"{CITY:-^30}""\n"
